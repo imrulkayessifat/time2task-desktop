@@ -5,10 +5,11 @@ import { SlCalender } from 'react-icons/sl'
 import { LuAlarmClock } from 'react-icons/lu'
 import { PiClockClockwise } from 'react-icons/pi'
 import { IoFlowerOutline } from 'react-icons/io5'
-import { IoChatbubbleEllipsesOutline } from 'react-icons/io5'
 import { PiExclamationMarkFill } from 'react-icons/pi'
+import { IoChatbubbleEllipsesOutline } from 'react-icons/io5'
 
 import { cn } from '@renderer/lib/utils'
+import AvatarIcon from '../assets/avatar.jpg'
 import AnnouncementIcon from '../assets/Announcement.svg'
 import NotificationIcon from '../assets/Notification.svg'
 
@@ -23,6 +24,7 @@ const icons = [
 ]
 
 const pageTitles: Record<string, string> = {
+  '/profile': 'My Profile',
   '/dashboard': 'Welcome! Jerome Bella',
   '/workspace': 'My Workspace',
   '/timesheet': 'Timesheet',
@@ -37,8 +39,24 @@ const MainLayout: React.FC = () => {
   const location = useLocation()
 
   return (
-    <div className="h-screen flex">
-      <div className="w-[70px] min-w-[70px] flex flex-col bg-[#F0F0F0] items-center py-2 gap-3">
+    <div className="h-screen flex overflow-hidden">
+      <div className="w-[70px] min-w-[70px] h-full flex flex-col bg-[#F0F0F0] items-center py-2 gap-3">
+        <div
+          className={cn(
+            'inline-flex p-2 rounded-full justify-center cursor-pointer items-center mb-2',
+            location.pathname === '/profile' && 'bg-[#009DDA1A]'
+          )}
+          onClick={() => navigate('/profile')}
+        >
+          <img
+            src={AvatarIcon} // Replace with your avatar image path or import
+            alt="Profile"
+            className={cn(
+              'w-8 h-8 rounded-full object-cover',
+              location.pathname === '/profile' ? 'ring-2 ring-[#0981b1d8]' : 'ring-0'
+            )}
+          />
+        </div>
         {icons.map(({ Icon, name, page }) => (
           <div
             key={name}
@@ -52,7 +70,7 @@ const MainLayout: React.FC = () => {
           </div>
         ))}
       </div>
-      <div className="flex flex-col w-full">
+      <div className="flex flex-col w-full h-screen">
         <div className="h-[60px] border-b border-black/15 flex justify-between items-center px-5">
           <p className="text-[20px] leading-[20px] font-medium">
             {pageTitles[location.pathname] || 'Welcome!'}

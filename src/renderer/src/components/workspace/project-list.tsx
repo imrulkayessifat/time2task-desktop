@@ -12,8 +12,8 @@ import TaskView from './task-view'
 const ProjectList: React.FC = () => {
   const [view, setView] = React.useState<'tasks' | 'chat' | 'files'>('tasks')
   return (
-    <div className="flex flex-col md:flex-row w-full md:border-b-2 border-black/15">
-      <div className="flex flex-col w-full md:w-1/5 min-w-[170px] border-r-2 border-black/15 p-2">
+    <div className="flex flex-col lg:flex-row w-full md:border-b-2 border-black/15 h-full">
+      <div className="flex flex-col w-full lg:w-1/5 min-w-[170px] border-r-2 border-black/15 p-2 flex-shrink-0">
         <div className="flex flex-col gap-2 w-full">
           <p className="text-[18px] leading-[20px] font-medium">Recent Projects</p>
           <div className="flex w-full items-center gap-1 border border-black/15 rounded-md p-2">
@@ -27,8 +27,8 @@ const ProjectList: React.FC = () => {
           </div>
         </div>
       </div>
-      <div className="flex flex-col gap-1 px-2 py-1 w-full">
-        <div className="flex flex-col-reverse md:flex-row justify-between border-b border-black/15 px-1">
+      <div className="flex flex-col gap-1 px-2 py-1 w-full min-w-0">
+        <div className="flex flex-col-reverse md:flex-row justify-between border-b border-black/15 px-1 flex-shrink-0">
           <div className="flex gap-3 items-center p-1">
             <button
               onClick={() => setView('tasks')}
@@ -92,22 +92,24 @@ const ProjectList: React.FC = () => {
               </span>
             </button>
           </div>
-          <div className="flex gap-3 items-center pb-1">
+          <div className="flex gap-3 items-center pb-1 flex-shrink-0">
             <p className="font-light text-[20px] leading-[16px]">00:00:00</p>
-            <button className="inline-flex items-center p-2 gap-2 bg-[#D9D9D9] cursor-pointer">
+            <button className="inline-flex rounded-md items-center p-2 gap-2 bg-[#D9D9D9] cursor-pointer whitespace-nowrap">
               <VscDebugStart className="w-6 h-6" />
               <p className="font-light text-[14px] leading-[16px]">Start Tracker</p>
             </button>
             <BsThreeDotsVertical className="w-6 h-6 cursor-pointer" />
           </div>
         </div>
-        {view === 'tasks' ? (
-          <TaskView />
-        ) : view === 'chat' ? (
-          <div className="p-4">Chat View (Coming Soon)</div>
-        ) : (
-          <div className="p-4">Files View (Coming Soon)</div>
-        )}
+        <div className="flex-1 overflow-hidden">
+          {view === 'tasks' ? (
+            <TaskView />
+          ) : view === 'chat' ? (
+            <div className="p-4">Chat View (Coming Soon)</div>
+          ) : (
+            <div className="p-4">Files View (Coming Soon)</div>
+          )}
+        </div>
       </div>
     </div>
   )

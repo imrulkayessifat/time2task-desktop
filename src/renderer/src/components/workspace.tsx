@@ -2,12 +2,13 @@ import React from 'react'
 
 import { cn } from '@renderer/lib/utils'
 import ProjectList from './workspace/project-list'
+import CalendarView from './workspace/calendar-view'
 
 const Workspace: React.FC = () => {
   const [view, setView] = React.useState<'list' | 'calendar'>('list')
   return (
-    <div className="flex flex-col w-full">
-      <div className="w-full border-b border-black/15 h-[46px]">
+    <div className="flex flex-col w-full h-full">
+      <div className="w-full border-b border-black/15 h-[46px] min-h-[46px]">
         <button
           className={cn(
             'relative inline-flex items-center justify-center w-1/2 h-full cursor-pointer',
@@ -45,7 +46,7 @@ const Workspace: React.FC = () => {
           </span>
         </button>
       </div>
-      {view === 'list' ? <ProjectList /> : <div className="p-4">Calendar View (Coming Soon)</div>}
+      {view === 'list' ? <ProjectList /> : <CalendarView />}
     </div>
   )
 }

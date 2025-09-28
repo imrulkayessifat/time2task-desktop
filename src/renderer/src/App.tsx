@@ -9,12 +9,14 @@ import Schedule from './components/schedule'
 import Chat from './components/chat'
 import Leave from './components/leave'
 import Attendance from './components/attendance'
+import Profile from './components/profile'
 
 function App(): React.JSX.Element {
   return (
     <Routes>
       <Route path="/" element={<Login />} />
       <Route element={<MainLayout />}>
+        <Route path="/profile" element={<Profile />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/workspace" element={<Workspace />} />
         <Route path="/timesheet" element={<Timesheet />} />
