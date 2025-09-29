@@ -8,6 +8,7 @@ import { IoChatbubbleEllipsesOutline } from 'react-icons/io5'
 
 import { cn } from '@renderer/lib/utils'
 import TaskView from './task-view'
+import ChatView from './chat-view'
 
 const ProjectList: React.FC = () => {
   const [view, setView] = React.useState<'tasks' | 'chat' | 'files'>('tasks')
@@ -105,7 +106,7 @@ const ProjectList: React.FC = () => {
           {view === 'tasks' ? (
             <TaskView />
           ) : view === 'chat' ? (
-            <div className="p-4">Chat View (Coming Soon)</div>
+            <ChatView />
           ) : (
             <div className="p-4">Files View (Coming Soon)</div>
           )}
