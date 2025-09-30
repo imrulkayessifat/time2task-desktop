@@ -5,8 +5,10 @@ import Daily from './timesheet/daily'
 import Weekly from './timesheet/weekly'
 import Monthly from './timesheet/monthly'
 import { cn } from '@renderer/lib/utils'
+import { addTimeSheet } from './hooks/add-timesheet'
 
 const Timesheet: React.FC = () => {
+  const { onOpen } = addTimeSheet()
   const [selected, setSelected] = useState<string>('Daily')
   const renderContent = () => {
     switch (selected) {
@@ -61,7 +63,10 @@ const Timesheet: React.FC = () => {
           <p className="font-light border border-red-500 bg-[#E336291A] text-[14px] leading-[25px] rounded-[6px] p-[10px]">
             Break Time: 01:30:00
           </p>
-          <button className="flex cursor-pointer justify-between items-center gap-2 rounded-[6px] p-[10px] bg-gradient-to-r from-[#009DDA] to-[#294DFF] text-white">
+          <button
+            onClick={onOpen}
+            className="flex cursor-pointer justify-between items-center gap-2 rounded-[6px] p-[10px] bg-gradient-to-r from-[#009DDA] to-[#294DFF] text-white"
+          >
             <GoPlus className="w-5 h-5 text-white" />
             <p className="font-light text-[14px] leading-[25px]">Add Timesheet</p>
           </button>
