@@ -40,7 +40,7 @@ const MainLayout: React.FC = () => {
 
   return (
     <div className="h-screen flex overflow-hidden">
-      <div className="w-[70px] min-w-[70px] h-full flex flex-col bg-[#F0F0F0] items-center py-2 gap-3">
+      <div className="w-[70px] z-30 min-w-[70px] h-full flex flex-col bg-[#F0F0F0] items-center py-2 gap-3">
         <div
           className={cn(
             'inline-flex p-2 rounded-full justify-center cursor-pointer items-center mb-2',
