@@ -10,12 +10,19 @@ import Chat from './components/chat'
 import Leave from './components/leave'
 import Attendance from './components/attendance'
 import Profile from './components/profile'
+import PrivateRoute from './components/private-route'
 
 function App(): React.JSX.Element {
   return (
     <Routes>
       <Route path="/" element={<Login />} />
-      <Route element={<MainLayout />}>
+      <Route
+        element={
+          <PrivateRoute>
+            <MainLayout />
+          </PrivateRoute>
+        }
+      >
         <Route path="/profile" element={<Profile />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/workspace" element={<Workspace />} />

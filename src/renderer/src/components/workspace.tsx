@@ -1,11 +1,11 @@
-import React from 'react'
+import React, { useState } from 'react'
 
 import { cn } from '@renderer/lib/utils'
 import ProjectList from './workspace/project-list'
 import CalendarView from './workspace/calendar-view'
 
 const Workspace: React.FC = () => {
-  const [view, setView] = React.useState<'list' | 'calendar'>('list')
+  const [view, setView] = useState<'list' | 'calendar'>('list')
   return (
     <div className="flex flex-col w-full h-full">
       <div className="w-full border-b border-black/15 h-[46px] min-h-[46px]">

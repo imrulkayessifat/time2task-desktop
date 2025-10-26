@@ -1,6 +1,8 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
 
+import { removeClientToken } from '@renderer/lib/auth'
+
 import LogoutIcon from '../assets/logout.svg'
 import CheckInIcon from '../assets/check-in.svg'
 import CheckOutIcon from '../assets/check-out.svg'
@@ -9,7 +11,10 @@ import TimelightIcon from '../assets/time-night-fill.svg'
 
 const Dashboard: React.FC = () => {
   const navigate = useNavigate()
+
   const handleLogOut = (): void => {
+    removeClientToken()
+    localStorage.removeItem('user')
     navigate('/')
   }
 

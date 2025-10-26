@@ -7,13 +7,16 @@ import { createRoot } from 'react-dom/client'
 import App from './App'
 import SheetProvider from './providers/sheet-provider'
 import DialogProvider from './providers/dialog-provider'
+import { QueryProvider } from './providers/query-provider'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <BrowserRouter>
-      <App />
-      <SheetProvider />
-      <DialogProvider />
+      <QueryProvider>
+        <App />
+        <SheetProvider />
+        <DialogProvider />
+      </QueryProvider>
     </BrowserRouter>
   </StrictMode>
 )

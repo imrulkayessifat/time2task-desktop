@@ -206,7 +206,7 @@ const Attendance: React.FC = () => {
 
         {/* Graph View */}
         {activeView === 'graph' && (
-          <div className="bg-white rounded-lg shadow p-4 md:p-6">
+          <div className="bg-white p-4 md:p-6">
             <div className="w-full h-[300px]">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={graphData} margin={{ top: 10, right: 10, left: 0, bottom: 5 }}>
@@ -271,8 +271,8 @@ const Attendance: React.FC = () => {
         {activeView === 'table' && (
           <>
             {/* Table - Desktop View */}
-            <div className="hidden lg:block bg-white rounded-lg shadow overflow-hidden">
-              <div className="overflow-x-auto overflow-y-auto max-h-[350px]">
+            <div className="hidden lg:block h-full bg-white rounded-lg shadow overflow-hidden">
+              <div className="overflow-x-auto overflow-y-auto h-full max-h-[350px]">
                 <table className="w-full">
                   <thead className="bg-gray-50 border-b border-gray-200 sticky top-0">
                     <tr>

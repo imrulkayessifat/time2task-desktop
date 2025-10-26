@@ -1,16 +1,68 @@
 import { useNavigate } from 'react-router-dom'
 
+import { cn } from '@renderer/lib/utils'
 import time2tasklogo from '../assets/time2task.svg'
 import googleIcon from '../assets/devicon_google.svg'
 import appleIcon from '../assets/devicon_apple.svg'
+import { FormEvent, useEffect, useState } from 'react'
+import { getClientSideUser, setClientToken } from '@renderer/lib/auth'
 
 const Login = (): React.ReactElement => {
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(' ')
   const navigate = useNavigate()
 
-  const handleSignIn = (): void => {
-    navigate('/dashboard')
-  }
+  useEffect(() => {
+    const userData = getClientSideUser()
+    if (userData && userData.session) {
+      navigate('/dashboard')
+    }
+  }, [navigate])
 
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    setIsLoading(true)
+    setError(' ')
+
+    const formData = new FormData(event.currentTarget)
+    const email = formData.get('email')
+    const password = formData.get('password')
+    const rememberMe = true
+
+    const response = await fetch(`${import.meta.env.VITE_URL}/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        email: email,
+        password: password,
+        rememberMe: rememberMe
+      })
+    })
+
+    console.log(response.ok)
+
+    if (!response.ok) {
+      setIsLoading(false)
+      setError('Failed to contact server.')
+      return
+    }
+
+    const { data, success } = await response.json()
+    console.log('success', success, data)
+    setIsLoading(false)
+    if (!success) {
+      setError('Invalid email or password.')
+    } else {
+      const success = setClientToken(data.token)
+      if (!success) {
+        throw new Error('Failed to set authentication cookie')
+      }
+      localStorage.setItem('user', JSON.stringify(data))
+      navigate('/dashboard')
+    }
+  }
   return (
     <div className="flex h-screen w-full bg-white items-center justify-center">
       <div className="flex flex-col gap-[26px] px-[30px] py-[50px] min-w-[460px] min-h-[696px] w-[460px] h-[696px] items-center justify-center">
@@ -37,26 +89,45 @@ const Login = (): React.ReactElement => {
               <div className="flex-grow h-px bg-black/15"></div>
             </div>
           </div>
-          <div className="flex flex-col items-center gap-5 w-full">
+          <form onSubmit={handleSubmit} className="flex flex-col items-center gap-5 w-full">
+            <div>
+              <p className="text-base leading-5 font-normal text-red-500 text-left">
+                <span>{error}</span>
+              </p>
+            </div>
             <div className="flex flex-col gap-2 w-full">
               <span className="text-[14px] leading-5 font-light">Email*</span>
               <input
+                disabled={isLoading}
                 type="email"
+                name="email"
                 placeholder="Enter email address"
-                className="px-2 h-10 rounded-md border border-black/15"
+                className={cn(
+                  'px-2 h-10 rounded-md border border-black/15',
+                  isLoading && 'opacity-25 cursor-not-allowed'
+                )}
               />
             </div>
             <div className="flex flex-col gap-2 w-full">
               <span className="text-[14px] leading-5 font-light">Password*</span>
               <input
+                disabled={isLoading}
                 type="password"
+                name="password"
                 placeholder="Enter password"
-                className="px-2 h-10 rounded-md border border-black/15"
+                className={cn(
+                  'px-2 h-10 rounded-md border border-black/15',
+                  isLoading && 'opacity-25 cursor-not-allowed'
+                )}
               />
             </div>
             <button
-              onClick={handleSignIn}
-              className="h-10 cursor-pointer bg-gradient-to-r from-[#009DDA] to-[#294DFF] inline-flex items-center justify-center rounded-md text-white w-full"
+              disabled={isLoading}
+              type="submit"
+              className={cn(
+                'h-10 cursor-pointer bg-gradient-to-r from-[#009DDA] to-[#294DFF] inline-flex items-center justify-center rounded-md text-white w-full',
+                isLoading && 'opacity-25 cursor-not-allowed'
+              )}
             >
               Sign In
             </button>
@@ -66,7 +137,7 @@ const Login = (): React.ReactElement => {
             >
               Forgot password?
             </a>
-          </div>
+          </form>
           <div className="flex justify-center gap-1 w-full">
             <p className="font-extralight text-[14px] leading-5">Don&apos;t have an account?</p>
             <a
