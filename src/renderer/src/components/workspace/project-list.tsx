@@ -4,6 +4,7 @@ import { X } from 'lucide-react'
 import { CiSearch } from 'react-icons/ci'
 import { PiFilesDuotone } from 'react-icons/pi'
 import { VscDebugStart } from 'react-icons/vsc'
+import { VscDebugPause } from 'react-icons/vsc'
 import { FaArrowTurnDown } from 'react-icons/fa6'
 import { BsThreeDotsVertical } from 'react-icons/bs'
 import { FaAngleLeft, FaAngleRight } from 'react-icons/fa6'
@@ -13,6 +14,7 @@ import Loader from '../Loader'
 import TaskView from './task-view'
 import ChatView from './chat-view'
 import { cn } from '@renderer/lib/utils'
+import { useTimeState } from '../hooks/time-state'
 import { useGetProjects } from '../hooks/project/use-get-projects'
 import { useSelectProject } from '../hooks/project/use-select-project'
 
@@ -30,10 +32,14 @@ interface ProjectData {
 
 const ProjectList: React.FC = () => {
   const [page, setPage] = useState(1)
-  const { project_id, task_id, setProject } = useSelectProject()
+  const { isRunning, setIsRunning } = useTimeState()
   const [searchValue, setSearchValue] = useState<string>('')
+  const { project_id, task_id, setProject } = useSelectProject()
   const [searchProject, setSearchProject] = useState<ProjectData>()
   const [view, setView] = useState<'tasks' | 'chat' | 'files'>('tasks')
+  const [time, setTime] = useState({ hours: 0, minutes: 0, seconds: 0 })
+  const [intervalId, setIntervalId] = useState<NodeJS.Timeout | null>(null)
+
   const { data, isLoading } = useGetProjects({ page })
 
   if (isLoading) {
@@ -48,6 +54,55 @@ const ProjectList: React.FC = () => {
     name?: string
   }[]
   const meta = searchProject?.meta ? searchProject.meta : data?.meta
+
+  const start = () => {
+    // Clear any existing time and interval when starting
+    if (intervalId) {
+      clearInterval(intervalId)
+    }
+    setTime({ hours: 0, minutes: 0, seconds: 0 })
+    setIsRunning(true)
+
+    const id = setInterval(() => {
+      setTime((prevTime) => {
+        const newSeconds = prevTime.seconds + 1
+        const newMinutes = prevTime.minutes + Math.floor(newSeconds / 60)
+        const newHours = prevTime.hours + Math.floor(newMinutes / 60)
+
+        return {
+          hours: newHours,
+          minutes: newMinutes % 60,
+          seconds: newSeconds % 60
+        }
+      })
+    }, 1000)
+    setIntervalId(id)
+  }
+
+  const pause = () => {
+    if (isRunning && intervalId) {
+      clearInterval(intervalId)
+      setIsRunning(false)
+    }
+  }
+
+  const handleTimerToggle = async () => {
+    if (!isRunning) {
+      // window.electron.ipcRenderer.send('permission-check')
+      start()
+
+      // window.electron.ipcRenderer.send('idle-started', {
+      //   projectId: project_id,
+      //   taskId: task_id
+      // })
+    } else {
+      pause()
+      // window.electron.ipcRenderer.send('idle-stopped', {
+      //   projectId: project_id,
+      //   taskId: task_id
+      // })
+    }
+  }
 
   const handleSearchChange = (event: ChangeEvent<HTMLInputElement>): void => {
     setSearchValue(event.target.value)
@@ -89,7 +144,11 @@ const ProjectList: React.FC = () => {
     setSearchValue('') // Prevent default form submission
     setSearchProject(undefined)
   }
-  console.log('Projects data:', data)
+
+  const formatTime = (value: number) => {
+    return value.toString().padStart(2, '0')
+  }
+
   return (
     <div className="flex flex-col lg:flex-row w-full md:border-b-2 border-black/15 h-full">
       <div className="flex flex-col w-full lg:w-1/5 min-w-[170px] border-r-2 border-black/15 p-2 flex-shrink-0">
@@ -238,18 +297,29 @@ const ProjectList: React.FC = () => {
             </button>
           </div>
           <div className="flex gap-3 items-center pb-1 flex-shrink-0">
-            <p className="font-light text-[20px] leading-[16px]">00:00:00</p>
+            <p className="font-light text-[20px] leading-[16px]">{`${formatTime(time.hours)}:${formatTime(time.minutes)}:${formatTime(time.seconds)}`}</p>
             <button
               disabled={task_id === -1}
+              onClick={handleTimerToggle}
               className={cn(
                 'inline-flex rounded-md items-center p-2 gap-2 bg-[#D9D9D9] cursor-pointer whitespace-nowrap',
                 task_id !== -1
                   ? 'bg-gradient-to-r from-[#009DDA] to-[#294DFF] text-white'
-                  : ' opacity-25'
+                  : ' opacity-25',
+                  isRunning && "bg-gradient-to-r from-[#5cffae] to-[#1eff69] text-white"
               )}
             >
-              <VscDebugStart className="w-6 h-6" />
-              <p className="font-light text-[14px] leading-[16px]">Start Tracker</p>
+              {isRunning ? (
+                <>
+                  <VscDebugPause className="w-6 h-6" />
+                  <p className="font-light text-[14px] leading-[16px]">Pause Tracker</p>
+                </>
+              ) : (
+                <>
+                  <VscDebugStart className="w-6 h-6" />
+                  <p className="font-light text-[14px] leading-[16px]">Start Tracker</p>
+                </>
+              )}
             </button>
             <BsThreeDotsVertical className="w-6 h-6 cursor-pointer" />
           </div>
