@@ -1,22 +1,39 @@
-import { contextBridge } from 'electron'
-import { electronAPI } from '@electron-toolkit/preload'
+import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron'
 
-// Custom APIs for renderer
-const api = {}
-
-// Use `contextBridge` APIs to expose Electron APIs to
-// renderer only if context isolation is enabled, otherwise
-// just add to the DOM global.
-if (process.contextIsolated) {
-  try {
-    contextBridge.exposeInMainWorld('electron', electronAPI)
-    contextBridge.exposeInMainWorld('api', api)
-  } catch (error) {
-    console.error(error)
+// Exposed Electron API
+contextBridge.exposeInMainWorld('electron', {
+  ipcRenderer: {
+    send: (channel: string, data?: unknown) => {
+      ipcRenderer.send(channel, data)
+    },
+    on: (channel: string, func: (...args: unknown[]) => void) => {
+      const subscription = (_event: IpcRendererEvent, ...args: unknown[]) => func(...args)
+      ipcRenderer.on(channel, subscription)
+      return () => {
+        ipcRenderer.removeListener(channel, subscription)
+      }
+    },
+    invoke: async (channel: string, ...args: unknown[]): Promise<unknown> => {
+      return await ipcRenderer.invoke(channel, ...args)
+    },
+    removeAllListeners: (channel: string) => {
+      ipcRenderer.removeAllListeners(channel)
+    }
   }
-} else {
-  // @ts-ignore (define in dts)
-  window.electron = electronAPI
-  // @ts-ignore (define in dts)
-  window.api = api
+})
+
+// Type definitions
+export type ElectronAPI = {
+  ipcRenderer: {
+    send: (channel: string, data?: unknown) => void
+    on: (channel: string, func: (...args: unknown[]) => void) => () => void
+    invoke: (channel: string, ...args: unknown[]) => Promise<unknown>
+    removeAllListeners: (channel: string) => void
+  }
+}
+
+declare global {
+  interface Window {
+    electron: ElectronAPI
+  }
 }

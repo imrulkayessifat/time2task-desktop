@@ -306,7 +306,7 @@ const ProjectList: React.FC = () => {
                 task_id !== -1
                   ? 'bg-gradient-to-r from-[#009DDA] to-[#294DFF] text-white'
                   : ' opacity-25',
-                  isRunning && "bg-gradient-to-r from-[#5cffae] to-[#1eff69] text-white"
+                isRunning && 'bg-gradient-to-r from-[#5cffae] to-[#1eff69] text-white'
               )}
             >
               {isRunning ? (
